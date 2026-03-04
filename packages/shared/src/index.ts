@@ -8,6 +8,6 @@ export type {
   OrgSettings,
   TimeRange,
 } from "./types";
-export { apiClient } from "./api-client";
+export { apiClient, createSuspenseResource } from "./api-client";
 export { AuthContext, useAuth } from "./auth";
 export type { AuthContextValue } from "./auth";
