@@ -1,2 +1,3 @@
 @import "tailwindcss";
+@import "@pulse/ui/src/tokens.css";
 @source "../../../packages";
