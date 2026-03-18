@@ -1,5 +1,6 @@
 import React from "react";
 import type { SummaryStats } from "@pulse/shared";
+import { createSuspenseResource } from "@pulse/shared";
 import { StatCard } from "@pulse/ui";
 
 function formatNumber(value: number): string {
@@ -18,11 +19,13 @@ function formatPercentage(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
-export function StatsBar({
-  stats,
-}: {
-  stats: SummaryStats;
-}): React.ReactElement {
+const statsResource = createSuspenseResource<SummaryStats>(
+  fetch("/api/analytics/summary").then((r) => r.json()),
+);
+
+export function StatsBar(): React.ReactElement {
+  const stats = statsResource.read();
+
   return (
     <div className="grid grid-cols-4 gap-4">
       <StatCard label="Total Users" value={formatNumber(stats.totalUsers)} />

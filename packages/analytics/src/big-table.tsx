@@ -1,5 +1,6 @@
 import React from "react";
-import type { TableRow } from "@pulse/shared";
+import type { TableRow, PaginatedResponse } from "@pulse/shared";
+import { createSuspenseResource } from "@pulse/shared";
 import { DataTable } from "@pulse/ui";
 
 const columns = [
@@ -18,11 +19,15 @@ const columns = [
   },
 ];
 
-export function BigTable({
-  data,
-}: {
-  data: TableRow[];
-}): React.ReactElement {
+const tableResource = createSuspenseResource<TableRow[]>(
+  fetch("/api/analytics/table?page=1")
+    .then((r) => r.json())
+    .then((result: PaginatedResponse<TableRow>) => result.data),
+);
+
+export function BigTable(): React.ReactElement {
+  const data = tableResource.read();
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">
       <h3 className="mb-4 font-medium text-gray-900">Recent Activity</h3>

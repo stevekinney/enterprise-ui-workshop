@@ -1,11 +1,31 @@
 import React from "react";
-import type { ChartDataPoint } from "@pulse/shared";
+import type { ChartDataPoint, TimeRange } from "@pulse/shared";
+import { createSuspenseResource } from "@pulse/shared";
+
+const chartCache = new Map<
+  TimeRange,
+  ReturnType<typeof createSuspenseResource<ChartDataPoint[]>>
+>();
+
+function getChartResource(range: TimeRange) {
+  if (!chartCache.has(range)) {
+    chartCache.set(
+      range,
+      createSuspenseResource<ChartDataPoint[]>(
+        fetch(`/api/analytics/chart?range=${range}`).then((r) => r.json()),
+      ),
+    );
+  }
+  return chartCache.get(range)!;
+}
 
 export function Chart({
-  data,
+  range = "30d",
 }: {
-  data: ChartDataPoint[];
+  range?: TimeRange;
 }): React.ReactElement {
+  const data = getChartResource(range).read();
+
   if (data.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center text-gray-400">
